@@ -6,9 +6,16 @@ const multer = require("multer");
 
 
 // create student --Admin
+
+
 exports.createItem = (async (req, res, next) => {
+    // req.body.image=req.file.filename
+    if (req.file) {
+        req.body.image = req.file.filename;
+      }
     const item = await Item.create(req.body);
-    console.log(item)
+
+    console.log(req.body)
     res.status(201).json({
         success: true,
         item,
@@ -22,6 +29,7 @@ exports.getAllitems = async (req, res) => {
     const apiFeature = new ApiFeatures(Item.find(), req.query).search().filter();
 
     const items = await apiFeature.query;
+    
     res.status(200).json({
         success: true,
         items,
@@ -79,7 +87,10 @@ exports.deleteItem = async (req, res, next) => {
 
 
     if (!item) {
-        return next(new ErrorHandler("Item not found ", 404));
+        return res.status(500).json({
+            success: false,
+            message: "Item not Found"
+        });
     }
 
     // ==========================================================================
